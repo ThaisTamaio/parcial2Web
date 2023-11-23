@@ -71,7 +71,11 @@ describe('AeropuertoService', () => {
 
   it('create should fail if the airport code has more than 3 characters', async () => {
     try {
-      await service.create({ ...aeropuertoList[0], codigo: 'ABCD' });
+      await service.create({
+        ...aeropuertoList[0], codigo: 'ABCD',
+        latitud: 0,
+        longitud: 0
+      });
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
     }
@@ -81,10 +85,13 @@ describe('AeropuertoService', () => {
     const newAeropuerto = {
       ...aeropuertoList[0],
       id: faker.datatype.uuid(),
+      latitud: faker.datatype.number({ min: -90, max: 90 }),
+      longitud: faker.datatype.number({ min: -180, max: 180 })
     };
     const result = await service.create(newAeropuerto);
     expect(result).toEqual(newAeropuerto);
   });
+  
 
   it('update should fail if the airport code has more than 3 characters', async () => {
     try {
