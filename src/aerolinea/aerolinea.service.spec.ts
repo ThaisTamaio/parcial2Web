@@ -6,21 +6,31 @@ import { AerolineaEntity } from './aerolinea.entity';
 import { AerolineaService } from './aerolinea.service';
 import { faker } from '@faker-js/faker';
 import { BadRequestException } from '@nestjs/common';
+import { AeropuertoEntity } from '../aeropuerto/aeropuerto.entity';
 
 describe('AerolineaService', () => {
   let service: AerolineaService;
   let repository: Repository<AerolineaEntity>;
+  let aeropuertoRepository: Repository<AeropuertoEntity>;
   let aerolineaList: AerolineaEntity[];
   let deleteSpy: { calledWithId: string | null };
 
   beforeEach(async () => {
+    // Crear un aeropuerto de prueba
+    const aeropuertoTest = new AeropuertoEntity();
+    aeropuertoTest.id = faker.datatype.uuid();
+    aeropuertoTest.nombre = faker.address.cityName();
+    aeropuertoTest.codigo = faker.random.alpha({ count: 3 }).toUpperCase();
+    aeropuertoTest.pais = faker.address.country();
+    aeropuertoTest.ciudad = faker.address.city();
+  
     aerolineaList = Array.from({ length: 5 }).map(() => ({
       id: faker.datatype.uuid(),
       nombre: faker.company.companyName(),
       descripcion: faker.lorem.sentence(),
       fechaFundacion: faker.date.past(),
       paginaWeb: faker.internet.url(),
-      aeropuertos: [],
+      aeropuertos: [aeropuertoTest], // Incluye el aeropuerto de prueba
     }));
 
     deleteSpy = { calledWithId: null };
@@ -51,6 +61,7 @@ describe('AerolineaService', () => {
 
     service = module.get<AerolineaService>(AerolineaService);
     repository = module.get<Repository<AerolineaEntity>>(getRepositoryToken(AerolineaEntity));
+    aeropuertoRepository = module.get<Repository<AeropuertoEntity>>(getRepositoryToken(AeropuertoEntity));
   });
 
   it('should be defined', () => {
@@ -114,5 +125,25 @@ describe('AerolineaService', () => {
     await service.delete(aerolineaIdToDelete);
     expect(deleteSpy.calledWithId).toEqual(aerolineaIdToDelete);
   });
+
+  it('addAirportToAirline should add an airport to an airline', async () => {
+    const aerolinea = aerolineaList[0];
+    const aeropuerto = new AeropuertoEntity();
+    aeropuerto.id = faker.datatype.uuid();
+  
+    jest.spyOn(aeropuertoRepository, 'findOne').mockResolvedValueOnce(aeropuerto);
+    const result = await service.addAirportToAirline(aerolinea.id, aeropuerto.id);
+  
+    expect(result.aeropuertos).toContain(aeropuerto);
+  });
+
+  it('deleteAirportFromAirline should remove an airport from an airline', async () => {
+    const aerolinea = aerolineaList[0];
+    const aeropuerto = aerolinea.aeropuertos[0];
+  
+    const result = await service.deleteAirportFromAirline(aerolinea.id, aeropuerto.id);
+  
+    expect(result.aeropuertos).not.toContain(aeropuerto);
+  });  
   
 });

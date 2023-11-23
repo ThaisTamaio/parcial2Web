@@ -6,10 +6,12 @@ import { AeropuertoService } from './aeropuerto.service';
 import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
 import { faker } from '@faker-js/faker';
 import { BadRequestException } from '@nestjs/common';
+import { AerolineaEntity } from '../aerolinea/aerolinea.entity';
 
 describe('AeropuertoService', () => {
   let service: AeropuertoService;
   let aeropuertoRepository: Repository<AeropuertoEntity>;
+  let aerolineaRepository: Repository<AerolineaEntity>;
   let aeropuertoList: AeropuertoEntity[];
   let deleteSpy: { calledWithId: string | null };
 
@@ -49,6 +51,7 @@ describe('AeropuertoService', () => {
 
     service = module.get<AeropuertoService>(AeropuertoService);
     aeropuertoRepository = module.get<Repository<AeropuertoEntity>>(getRepositoryToken(AeropuertoEntity));
+    aerolineaRepository = module.get<Repository<AerolineaEntity>>(getRepositoryToken(AerolineaEntity));
   });
 
   it('should be defined', () => {
@@ -103,5 +106,19 @@ describe('AeropuertoService', () => {
 
     expect(deleteSpy.calledWithId).toEqual(aeropuertoIdToDelete);
   });
+
+  it('findAirportFromAirline should return an airport from an airline', async () => {
+    const aerolinea = new AerolineaEntity();
+    aerolinea.id = faker.datatype.uuid();
+    const aeropuerto = new AeropuertoEntity();
+    aeropuerto.id = faker.datatype.uuid();
+    aerolinea.aeropuertos = [aeropuerto];
+  
+    jest.spyOn(aerolineaRepository, 'findOne').mockResolvedValueOnce(aerolinea);
+    const result = await service.findAirportFromAirline(aerolinea.id, aeropuerto.id);
+  
+    expect(result).toEqual(aeropuerto);
+  });
+  
   
 });
