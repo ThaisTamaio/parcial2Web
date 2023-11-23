@@ -15,6 +15,7 @@ const aerolinea_module_1 = require("./aerolinea/aerolinea.module");
 const aerolinea_entity_1 = require("./aerolinea/aerolinea.entity");
 const aeropuerto_module_1 = require("./aeropuerto/aeropuerto.module");
 const aeropuerto_entity_1 = require("./aeropuerto/aeropuerto.entity");
+const aerolinea_aeropuerto_controller_1 = require("./aerolinea/aerolinea-aeropuerto.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
                 keepConnectionAlive: true,
             }),
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [app_controller_1.AppController, aerolinea_aeropuerto_controller_1.AerolineaAeropuertoController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

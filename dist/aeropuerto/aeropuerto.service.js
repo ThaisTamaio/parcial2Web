@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const aeropuerto_entity_1 = require("./aeropuerto.entity");
+const aerolinea_entity_1 = require("../aerolinea/aerolinea.entity");
 let AeropuertoService = class AeropuertoService {
-    constructor(aeropuertoRepository) {
+    constructor(aeropuertoRepository, aerolineaRepository) {
         this.aeropuertoRepository = aeropuertoRepository;
+        this.aerolineaRepository = aerolineaRepository;
     }
     async findAll() {
         return await this.aeropuertoRepository.find({ relations: ['aerolineas'] });
@@ -27,30 +29,44 @@ let AeropuertoService = class AeropuertoService {
     async findOne(id) {
         return await this.aeropuertoRepository.findOne({ where: { id }, relations: ['aerolineas'] });
     }
-    async create(aeropuerto) {
-        if (aeropuerto.codigo.length !== 3) {
+    async create(aeropuertoDto) {
+        if (aeropuertoDto.codigo.length !== 3) {
             throw new common_1.BadRequestException('El código del aeropuerto debe tener exactamente tres caracteres.');
         }
+        const aeropuerto = new aeropuerto_entity_1.AeropuertoEntity();
+        Object.assign(aeropuerto, aeropuertoDto);
         return await this.aeropuertoRepository.save(aeropuerto);
     }
-    async update(id, aeropuerto) {
+    async update(id, aeropuertoDto) {
         const existingAeropuerto = await this.aeropuertoRepository.findOne({ where: { id } });
         if (!existingAeropuerto) {
             throw new common_1.BadRequestException('Aeropuerto no encontrado.');
         }
-        if (aeropuerto.codigo && aeropuerto.codigo.length !== 3) {
+        if (aeropuertoDto.codigo && aeropuertoDto.codigo.length !== 3) {
             throw new common_1.BadRequestException('El código del aeropuerto debe tener exactamente tres caracteres.');
         }
-        return await this.aeropuertoRepository.save({ ...existingAeropuerto, ...aeropuerto });
+        Object.assign(existingAeropuerto, aeropuertoDto);
+        return await this.aeropuertoRepository.save(existingAeropuerto);
     }
     async delete(id) {
         await this.aeropuertoRepository.delete(id);
+    }
+    async findAirportFromAirline(aerolineaId, aeropuertoId) {
+        const aerolinea = await this.aerolineaRepository.findOne({ where: { id: aerolineaId }, relations: ['aeropuertos'] });
+        if (!aerolinea)
+            throw new common_1.NotFoundException('Aerolinea no encontrada.');
+        const aeropuerto = aerolinea.aeropuertos.find(aero => aero.id === aeropuertoId);
+        if (!aeropuerto)
+            throw new common_1.NotFoundException('Aeropuerto no encontrado en la aerolínea.');
+        return aeropuerto;
     }
 };
 exports.AeropuertoService = AeropuertoService;
 exports.AeropuertoService = AeropuertoService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(aeropuerto_entity_1.AeropuertoEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(aerolinea_entity_1.AerolineaEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], AeropuertoService);
 //# sourceMappingURL=aeropuerto.service.js.map
