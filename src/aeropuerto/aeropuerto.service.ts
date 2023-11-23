@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AeropuertoEntity } from './aeropuerto.entity';
 import { AerolineaEntity } from '../aerolinea/aerolinea.entity';
+import { AeropuertoDto } from './aeropuerto.dto';
 
 @Injectable()
 export class AeropuertoService {
@@ -21,22 +22,27 @@ export class AeropuertoService {
         return await this.aeropuertoRepository.findOne({ where: { id }, relations: ['aerolineas'] });
     }
 
-    async create(aeropuerto: AeropuertoEntity): Promise<AeropuertoEntity> {
-        if (aeropuerto.codigo.length !== 3) {
+    async create(aeropuertoDto: AeropuertoDto): Promise<AeropuertoEntity> {
+        if (aeropuertoDto.codigo.length !== 3) {
             throw new BadRequestException('El código del aeropuerto debe tener exactamente tres caracteres.');
         }
+
+        const aeropuerto = new AeropuertoEntity();
+        Object.assign(aeropuerto, aeropuertoDto);
         return await this.aeropuertoRepository.save(aeropuerto);
     }
 
-    async update(id: string, aeropuerto: Partial<AeropuertoEntity>): Promise<AeropuertoEntity> {
+    async update(id: string, aeropuertoDto: Partial<AeropuertoDto>): Promise<AeropuertoEntity> {
         const existingAeropuerto = await this.aeropuertoRepository.findOne({ where: { id } });
         if (!existingAeropuerto) {
             throw new BadRequestException('Aeropuerto no encontrado.');
         }
-        if (aeropuerto.codigo && aeropuerto.codigo.length !== 3) {
+        if (aeropuertoDto.codigo && aeropuertoDto.codigo.length !== 3) {
             throw new BadRequestException('El código del aeropuerto debe tener exactamente tres caracteres.');
         }
-        return await this.aeropuertoRepository.save({ ...existingAeropuerto, ...aeropuerto });
+
+        Object.assign(existingAeropuerto, aeropuertoDto);
+        return await this.aeropuertoRepository.save(existingAeropuerto);
     }
 
     async delete(id: string): Promise<void> {

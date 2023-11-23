@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AerolineaEntity } from './aerolinea.entity';
 import { AeropuertoEntity } from '../aeropuerto/aeropuerto.entity';
+import { AerolineaDto } from './aerolinea.dto';
 
 @Injectable()
 export class AerolineaService {
@@ -26,23 +27,28 @@ export class AerolineaService {
         });
     }
 
-    async create(aerolinea: AerolineaEntity): Promise<AerolineaEntity> {
-        if (new Date(aerolinea.fechaFundacion) >= new Date()) {
+    async create(aerolineaDto: AerolineaDto): Promise<AerolineaEntity> {
+        if (new Date(aerolineaDto.fechaFundacion) >= new Date()) {
             throw new BadRequestException('La fecha de fundación debe ser en el pasado.');
         }
+
+        const aerolinea = new AerolineaEntity();
+        Object.assign(aerolinea, aerolineaDto);
         return await this.aerolineaRepository.save(aerolinea);
     }
 
-    async update(id: string, aerolinea: Partial<AerolineaEntity>): Promise<AerolineaEntity> {
+    async update(id: string, aerolineaDto: Partial<AerolineaDto>): Promise<AerolineaEntity> {
         const existingAerolinea = await this.aerolineaRepository.findOne({ where: { id } });
         if (!existingAerolinea) {
             throw new BadRequestException('Aerolinea no encontrada.');
         }
-        if (aerolinea.fechaFundacion && new Date(aerolinea.fechaFundacion) >= new Date()) {
+        if (aerolineaDto.fechaFundacion && new Date(aerolineaDto.fechaFundacion) >= new Date()) {
             throw new BadRequestException('La fecha de fundación debe ser en el pasado.');
         }
-        return await this.aerolineaRepository.save({ ...existingAerolinea, ...aerolinea });
-    }    
+
+        Object.assign(existingAerolinea, aerolineaDto);
+        return await this.aerolineaRepository.save(existingAerolinea);
+    } 
 
     async delete(id: string): Promise<void> {
         await this.aerolineaRepository.delete(id);
@@ -90,5 +96,22 @@ export class AerolineaService {
         aerolinea.aeropuertos = aerolinea.aeropuertos.filter(aero => aero.id !== aeropuertoId);
     
         return this.aerolineaRepository.save(aerolinea);
+    }
+
+    async findAirportFromAirline(aerolineaId: string, aeropuertoId: string): Promise<AeropuertoEntity> {
+        const aerolinea = await this.aerolineaRepository.findOne({ 
+            where: { id: aerolineaId },
+            relations: ['aeropuertos']
+        });
+        if (!aerolinea) {
+            throw new NotFoundException('Aerolinea no encontrada.');
+        }
+
+        const aeropuerto = aerolinea.aeropuertos.find(aero => aero.id === aeropuertoId);
+        if (!aeropuerto) {
+            throw new NotFoundException('Aeropuerto no encontrado en la aerolínea.');
+        }
+
+        return aeropuerto;
     }
 }
