@@ -1,13 +1,16 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AeropuertoEntity } from './aeropuerto.entity';
+import { AerolineaEntity } from '../aerolinea/aerolinea.entity';
 
 @Injectable()
 export class AeropuertoService {
     constructor(
         @InjectRepository(AeropuertoEntity)
         private aeropuertoRepository: Repository<AeropuertoEntity>,
+        @InjectRepository(AerolineaEntity)
+        private aerolineaRepository: Repository<AerolineaEntity>, // Inyectar el repositorio de Aerolinea
     ) {}
 
     async findAll(): Promise<AeropuertoEntity[]> {
@@ -38,5 +41,16 @@ export class AeropuertoService {
 
     async delete(id: string): Promise<void> {
         await this.aeropuertoRepository.delete(id);
+    }
+
+    //Asociacion
+    async findAirportFromAirline(aerolineaId: string, aeropuertoId: string): Promise<AeropuertoEntity> {
+        const aerolinea = await this.aerolineaRepository.findOne({where: {id: aerolineaId}, relations: ['aeropuertos']});
+        if (!aerolinea) throw new NotFoundException('Aerolinea no encontrada.');
+    
+        const aeropuerto = aerolinea.aeropuertos.find(aero => aero.id === aeropuertoId);
+        if (!aeropuerto) throw new NotFoundException('Aeropuerto no encontrado en la aerolínea.');
+    
+        return aeropuerto;
     }
 }

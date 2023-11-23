@@ -114,4 +114,5 @@ describe('AerolineaService', () => {
     await service.delete(aerolineaIdToDelete);
     expect(deleteSpy.calledWithId).toEqual(aerolineaIdToDelete);
   });
+  
 });
