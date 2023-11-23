@@ -10,12 +10,35 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const aerolinea_module_1 = require("./aerolinea/aerolinea.module");
+const aerolinea_entity_1 = require("./aerolinea/aerolinea.entity");
+const aeropuerto_module_1 = require("./aeropuerto/aeropuerto.module");
+const aeropuerto_entity_1 = require("./aeropuerto/aeropuerto.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [
+            aerolinea_module_1.AerolineaModule,
+            aeropuerto_module_1.AeropuertoModule,
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'postgres',
+                host: 'localhost',
+                port: 5432,
+                username: 'postgres',
+                password: 'postgres',
+                database: 'postgres',
+                entities: [
+                    aerolinea_entity_1.AerolineaEntity,
+                    aeropuerto_entity_1.AeropuertoEntity,
+                ],
+                dropSchema: true,
+                synchronize: true,
+                keepConnectionAlive: true,
+            }),
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
