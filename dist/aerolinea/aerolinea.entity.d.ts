@@ -1,4 +1,4 @@
-import { AeropuertoEntity } from 'src/aeropuerto/aeropuerto.entity';
+import { AeropuertoEntity } from '../aeropuerto/aeropuerto.entity';
 export declare class AerolineaEntity {
     id: string;
     nombre: string;

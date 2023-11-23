@@ -8,10 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AeropuertoModule = void 0;
 const common_1 = require("@nestjs/common");
+const aeropuerto_service_1 = require("./aeropuerto.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const aeropuerto_entity_1 = require("./aeropuerto.entity");
 let AeropuertoModule = class AeropuertoModule {
 };
 exports.AeropuertoModule = AeropuertoModule;
 exports.AeropuertoModule = AeropuertoModule = __decorate([
-    (0, common_1.Module)({})
+    (0, common_1.Module)({
+        providers: [aeropuerto_service_1.AeropuertoService],
+        imports: [typeorm_1.TypeOrmModule.forFeature([aeropuerto_entity_1.AeropuertoEntity])],
+    })
 ], AeropuertoModule);
 //# sourceMappingURL=aeropuerto.module.js.map
