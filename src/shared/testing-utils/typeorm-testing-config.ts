@@ -1,6 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AerolineaEntity } from '../../aerolinea/aerolinea.entity';
-import { AeropuertoEntity } from '../../aeropuerto/aeropuerto.entity';
+import { AlbumEntity } from '../../album/album.entity';
+import { PerformerEntity } from '../../performer/performer.entity';
+import { TrackEntity } from '../../track/track.entity';
 
 //TODO: Add more entities here, fix paths
 
@@ -10,14 +11,16 @@ export const TypeOrmTestingConfig = () => [
     database: ':memory:',
     dropSchema: true,
     entities: [
-      AerolineaEntity,
-      AeropuertoEntity,
+      AlbumEntity,
+      PerformerEntity,
+      TrackEntity,
     ],
     synchronize: true,
     keepConnectionAlive: true,
   }),
   TypeOrmModule.forFeature([
-    AerolineaEntity,
-    AeropuertoEntity,
+    AlbumEntity,
+    PerformerEntity,
+    TrackEntity,
   ]),
 ];

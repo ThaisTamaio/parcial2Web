@@ -11,19 +11,22 @@ const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const aerolinea_module_1 = require("./aerolinea/aerolinea.module");
-const aerolinea_entity_1 = require("./aerolinea/aerolinea.entity");
-const aeropuerto_module_1 = require("./aeropuerto/aeropuerto.module");
-const aeropuerto_entity_1 = require("./aeropuerto/aeropuerto.entity");
-const aerolinea_aeropuerto_controller_1 = require("./aerolinea/aerolinea-aeropuerto.controller");
+const album_module_1 = require("./album/album.module");
+const album_entity_1 = require("./album/album.entity");
+const performer_module_1 = require("./performer/performer.module");
+const performer_entity_1 = require("./performer/performer.entity");
+const album_performer_controller_1 = require("./album/album-performer.controller");
+const track_module_1 = require("./track/track.module");
+const track_entity_1 = require("./track/track.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            aerolinea_module_1.AerolineaModule,
-            aeropuerto_module_1.AeropuertoModule,
+            album_module_1.AlbumModule,
+            performer_module_1.PerformerModule,
+            track_module_1.TrackModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: 'localhost',
@@ -32,15 +35,17 @@ exports.AppModule = AppModule = __decorate([
                 password: 'postgres',
                 database: 'postgres',
                 entities: [
-                    aerolinea_entity_1.AerolineaEntity,
-                    aeropuerto_entity_1.AeropuertoEntity,
+                    album_entity_1.AlbumEntity,
+                    performer_entity_1.PerformerEntity,
+                    track_entity_1.TrackEntity,
                 ],
                 dropSchema: true,
                 synchronize: true,
                 keepConnectionAlive: true,
             }),
+            track_module_1.TrackModule,
         ],
-        controllers: [app_controller_1.AppController, aerolinea_aeropuerto_controller_1.AerolineaAeropuertoController],
+        controllers: [app_controller_1.AppController, album_performer_controller_1.AlbumPerformerController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

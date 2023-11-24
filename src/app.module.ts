@@ -2,17 +2,20 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AerolineaModule } from './aerolinea/aerolinea.module';
-import { AerolineaEntity } from './aerolinea/aerolinea.entity';
-import { AeropuertoModule } from './aeropuerto/aeropuerto.module';
-import { AeropuertoEntity } from './aeropuerto/aeropuerto.entity';
-import { AerolineaAeropuertoController } from './aerolinea/aerolinea-aeropuerto.controller';
+import { AlbumModule } from './album/album.module';
+import { AlbumEntity } from './album/album.entity';
+import { PerformerModule } from './performer/performer.module';
+import { PerformerEntity } from './performer/performer.entity';
+import { AlbumPerformerController } from './album/album-performer.controller';
+import { TrackModule } from './track/track.module';
+import { TrackEntity } from './track/track.entity';
 
 
 @Module({
   imports: [
-    AerolineaModule,
-    AeropuertoModule,
+    AlbumModule,
+    PerformerModule,
+    TrackModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -21,16 +24,18 @@ import { AerolineaAeropuertoController } from './aerolinea/aerolinea-aeropuerto.
       password: 'postgres',
       database: 'postgres',
       entities: [
-        AerolineaEntity,
-        AeropuertoEntity,
+        AlbumEntity,
+        PerformerEntity,
+        TrackEntity,
         //TODO Agregar Entities
       ],
       dropSchema: true,
       synchronize: true,
       keepConnectionAlive: true,
     }),
+    TrackModule,
   ],
-  controllers: [AppController, AerolineaAeropuertoController],
+  controllers: [AppController, AlbumPerformerController],
   providers: [AppService],
 })
 export class AppModule {}
