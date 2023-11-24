@@ -21,11 +21,17 @@ export class AerolineaService {
     }
 
     async findOne(id: string): Promise<AerolineaEntity> {
-        return await this.aerolineaRepository.findOne({ 
+        const aerolinea = await this.aerolineaRepository.findOne({ 
             where: { id }, 
             relations: ['aeropuertos'] 
         });
-    }
+    
+        if (!aerolinea) {
+            throw new NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
+        }
+    
+        return aerolinea;
+    }    
 
     async create(aerolineaDto: AerolineaDto): Promise<AerolineaEntity> {
         if (new Date(aerolineaDto.fechaFundacion) >= new Date()) {
@@ -39,20 +45,28 @@ export class AerolineaService {
 
     async update(id: string, aerolineaDto: Partial<AerolineaDto>): Promise<AerolineaEntity> {
         const existingAerolinea = await this.aerolineaRepository.findOne({ where: { id } });
+    
         if (!existingAerolinea) {
-            throw new BadRequestException('Aerolinea no encontrada.');
+            throw new NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
         }
+    
         if (aerolineaDto.fechaFundacion && new Date(aerolineaDto.fechaFundacion) >= new Date()) {
             throw new BadRequestException('La fecha de fundación debe ser en el pasado.');
         }
-
+    
         Object.assign(existingAerolinea, aerolineaDto);
         return await this.aerolineaRepository.save(existingAerolinea);
-    } 
+    }    
 
     async delete(id: string): Promise<void> {
+        const aerolinea = await this.aerolineaRepository.findOne({ where: { id } });
+    
+        if (!aerolinea) {
+            throw new NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
+        }
+    
         await this.aerolineaRepository.delete(id);
-    }
+    }    
 
     //Asociacion
 

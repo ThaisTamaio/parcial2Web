@@ -29,10 +29,14 @@ let AerolineaService = class AerolineaService {
         });
     }
     async findOne(id) {
-        return await this.aerolineaRepository.findOne({
+        const aerolinea = await this.aerolineaRepository.findOne({
             where: { id },
             relations: ['aeropuertos']
         });
+        if (!aerolinea) {
+            throw new common_1.NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
+        }
+        return aerolinea;
     }
     async create(aerolineaDto) {
         if (new Date(aerolineaDto.fechaFundacion) >= new Date()) {
@@ -45,7 +49,7 @@ let AerolineaService = class AerolineaService {
     async update(id, aerolineaDto) {
         const existingAerolinea = await this.aerolineaRepository.findOne({ where: { id } });
         if (!existingAerolinea) {
-            throw new common_1.BadRequestException('Aerolinea no encontrada.');
+            throw new common_1.NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
         }
         if (aerolineaDto.fechaFundacion && new Date(aerolineaDto.fechaFundacion) >= new Date()) {
             throw new common_1.BadRequestException('La fecha de fundación debe ser en el pasado.');
@@ -54,6 +58,10 @@ let AerolineaService = class AerolineaService {
         return await this.aerolineaRepository.save(existingAerolinea);
     }
     async delete(id) {
+        const aerolinea = await this.aerolineaRepository.findOne({ where: { id } });
+        if (!aerolinea) {
+            throw new common_1.NotFoundException(`Aerolinea con ID ${id} no encontrada.`);
+        }
         await this.aerolineaRepository.delete(id);
     }
     async addAirportToAirline(aerolineaId, aeropuertoId) {

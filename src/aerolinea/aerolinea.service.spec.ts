@@ -5,7 +5,7 @@ import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-co
 import { AerolineaEntity } from './aerolinea.entity';
 import { AerolineaService } from './aerolinea.service';
 import { faker } from '@faker-js/faker';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AeropuertoEntity } from '../aeropuerto/aeropuerto.entity';
 
 describe('AerolineaService', () => {
@@ -104,7 +104,7 @@ describe('AerolineaService', () => {
     try {
       await service.update(faker.datatype.uuid(), {});
     } catch (e) {
-      expect(e).toBeInstanceOf(BadRequestException);
+      expect(e).toBeInstanceOf(NotFoundException);
     }
   });
 
