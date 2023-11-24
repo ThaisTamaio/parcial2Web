@@ -26,7 +26,7 @@ export class AlbumService {
     async findOne(id: string): Promise<AlbumEntity> {
         const album = await this.albumRepository.findOne({ 
             where: { id }, 
-            relations: ['performers, tracks'] 
+            relations: ['performers', 'tracks'] 
         });
     
         if (!album) {
@@ -59,14 +59,31 @@ export class AlbumService {
         if (!album) {
             throw new NotFoundException(`Album con ID ${id} no encontrada.`);
         }
-    
-        // Verificar si el álbum tiene tracks asociados
+
         if (album.tracks && album.tracks.length > 0) {
             throw new BadRequestException('No se puede eliminar un álbum con tracks asociados.');
         }
     
         await this.albumRepository.delete(id);
-    }      
+    }
+
+    async updateAlbumTracks(albumId: string, newTracks: TrackEntity[]): Promise<AlbumEntity> {
+        // Encontrar el álbum por ID
+        const album = await this.albumRepository.findOne({
+            where: { id: albumId },
+            relations: ['tracks']
+        });
+    
+        if (!album) {
+            throw new NotFoundException(`Album con ID ${albumId} no encontrado.`);
+        }
+    
+        // Actualizar los tracks del álbum
+        album.tracks = newTracks;
+        
+        // Guardar los cambios en el álbum
+        return await this.albumRepository.save(album);
+    }    
 
     //Asociacion
 
