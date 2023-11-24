@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const aerolinea_service_1 = require("./aerolinea.service");
 const aerolinea_entity_1 = require("./aerolinea.entity");
 const aeropuerto_module_1 = require("../aeropuerto/aeropuerto.module");
+const aerolinea_controller_1 = require("./aerolinea.controller");
 let AerolineaModule = class AerolineaModule {
 };
 exports.AerolineaModule = AerolineaModule;
@@ -22,6 +23,7 @@ exports.AerolineaModule = AerolineaModule = __decorate([
             (0, common_1.forwardRef)(() => aeropuerto_module_1.AeropuertoModule),
         ],
         providers: [aerolinea_service_1.AerolineaService],
+        controllers: [aerolinea_controller_1.AerolineaController],
         exports: [typeorm_1.TypeOrmModule.forFeature([aerolinea_entity_1.AerolineaEntity]), aerolinea_service_1.AerolineaService]
     })
 ], AerolineaModule);

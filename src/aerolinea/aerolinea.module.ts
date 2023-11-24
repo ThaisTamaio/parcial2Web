@@ -2,14 +2,16 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AerolineaService } from './aerolinea.service';
 import { AerolineaEntity } from './aerolinea.entity';
-import { AeropuertoModule } from '../aeropuerto/aeropuerto.module'; // Ajusta la ruta según sea necesario
+import { AeropuertoModule } from '../aeropuerto/aeropuerto.module';
+import { AerolineaController } from './aerolinea.controller'; // Asegúrate de importar AerolineaController
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AerolineaEntity]),
-    forwardRef(() => AeropuertoModule), // Importación con forwardRef
+    forwardRef(() => AeropuertoModule),
   ],
   providers: [AerolineaService],
-  exports: [TypeOrmModule.forFeature([AerolineaEntity]), AerolineaService] // Eliminada la exportación de AeropuertoModule
+  controllers: [AerolineaController],
+  exports: [TypeOrmModule.forFeature([AerolineaEntity]), AerolineaService]
 })
 export class AerolineaModule {}
