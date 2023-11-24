@@ -13,7 +13,7 @@ export declare class AerolineaService {
     delete(id: string): Promise<void>;
     addAirportToAirline(aerolineaId: string, aeropuertoId: string): Promise<AerolineaEntity>;
     findAirportsFromAirline(aerolineaId: string): Promise<AeropuertoEntity[]>;
-    updateAirportsFromAirline(aerolineaId: string, aeropuertosIds: string[]): Promise<AerolineaEntity>;
+    updateAirportsFromAirline(aerolineaId: string, aeropuertosData: any): Promise<AerolineaEntity>;
     deleteAirportFromAirline(aerolineaId: string, aeropuertoId: string): Promise<AerolineaEntity>;
     findAirportFromAirline(aerolineaId: string, aeropuertoId: string): Promise<AeropuertoEntity>;
 }

@@ -35,6 +35,22 @@ let AerolineaController = class AerolineaController {
     async delete(id) {
         return this.aerolineaService.delete(id);
     }
+    async addAirportToAirline(aerolineaId, aeropuertoId, res) {
+        try {
+            const updatedAerolinea = await this.aerolineaService.addAirportToAirline(aerolineaId, aeropuertoId);
+            res.status(201).json(updatedAerolinea);
+        }
+        catch (e) {
+            res.status(404).json({ message: e.message });
+        }
+    }
+    async updateAirportsFromAirline(aerolineaId, body) {
+        const aeropuertosIds = body.aeropuertosIds;
+        if (!Array.isArray(aeropuertosIds)) {
+            throw new common_1.BadRequestException('aeropuertosIds debe ser un array');
+        }
+        return this.aerolineaService.updateAirportsFromAirline(aerolineaId, aeropuertosIds);
+    }
 };
 exports.AerolineaController = AerolineaController;
 __decorate([
@@ -72,6 +88,23 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AerolineaController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Post)(':aerolineaId/airports/:aeropuertoId'),
+    __param(0, (0, common_1.Param)('aerolineaId')),
+    __param(1, (0, common_1.Param)('aeropuertoId')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], AerolineaController.prototype, "addAirportToAirline", null);
+__decorate([
+    (0, common_1.Put)(':aerolineaId/airports'),
+    __param(0, (0, common_1.Param)('aerolineaId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AerolineaController.prototype, "updateAirportsFromAirline", null);
 exports.AerolineaController = AerolineaController = __decorate([
     (0, common_1.Controller)('airlines'),
     __metadata("design:paramtypes", [aerolinea_service_1.AerolineaService])

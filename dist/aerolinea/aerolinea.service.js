@@ -85,13 +85,23 @@ let AerolineaService = class AerolineaService {
             throw new common_1.NotFoundException('Aerolinea no encontrada.');
         return aerolinea.aeropuertos;
     }
-    async updateAirportsFromAirline(aerolineaId, aeropuertosIds) {
-        const aerolinea = await this.aerolineaRepository.findOne({ where: { id: aerolineaId }, relations: ['aeropuertos'] });
+    async updateAirportsFromAirline(aerolineaId, aeropuertosData) {
+        const aeropuertosIds = Array.isArray(aeropuertosData) ? aeropuertosData : aeropuertosData.aeropuertosIds;
+        const aerolinea = await this.aerolineaRepository.findOne({ where: { id: aerolineaId } });
         if (!aerolinea)
             throw new common_1.NotFoundException('Aerolinea no encontrada.');
-        const aeropuertos = await this.aeropuertoRepository.findByIds(aeropuertosIds);
-        aerolinea.aeropuertos = aeropuertos;
-        return this.aerolineaRepository.save(aerolinea);
+        const aeropuertosExistentes = [];
+        for (const aeropuertoId of aeropuertosIds) {
+            const aeropuerto = await this.aeropuertoRepository.findOne({ where: { id: aeropuertoId } });
+            if (aeropuerto) {
+                aeropuertosExistentes.push(aeropuerto);
+            }
+        }
+        if (aeropuertosExistentes.length === 0) {
+            throw new common_1.NotFoundException('Ninguno de los aeropuertos proporcionados fue encontrado.');
+        }
+        aerolinea.aeropuertos = aeropuertosExistentes;
+        return await this.aerolineaRepository.save(aerolinea);
     }
     async deleteAirportFromAirline(aerolineaId, aeropuertoId) {
         const aerolinea = await this.aerolineaRepository.findOne({ where: { id: aerolineaId }, relations: ['aeropuertos'] });
