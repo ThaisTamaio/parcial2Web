@@ -27,7 +27,14 @@ let AeropuertoService = class AeropuertoService {
         return await this.aeropuertoRepository.find({ relations: ['aerolineas'] });
     }
     async findOne(id) {
-        return await this.aeropuertoRepository.findOne({ where: { id }, relations: ['aerolineas'] });
+        const aeropuerto = await this.aeropuertoRepository.findOne({
+            where: { id },
+            relations: ['aerolineas']
+        });
+        if (!aeropuerto) {
+            throw new common_1.NotFoundException(`Aeropuerto con ID ${id} no encontrado.`);
+        }
+        return aeropuerto;
     }
     async create(aeropuertoDto) {
         if (aeropuertoDto.codigo.length !== 3) {
@@ -40,7 +47,7 @@ let AeropuertoService = class AeropuertoService {
     async update(id, aeropuertoDto) {
         const existingAeropuerto = await this.aeropuertoRepository.findOne({ where: { id } });
         if (!existingAeropuerto) {
-            throw new common_1.BadRequestException('Aeropuerto no encontrado.');
+            throw new common_1.NotFoundException(`Aeropuerto con ID ${id} no encontrado.`);
         }
         if (aeropuertoDto.codigo && aeropuertoDto.codigo.length !== 3) {
             throw new common_1.BadRequestException('El código del aeropuerto debe tener exactamente tres caracteres.');
@@ -49,6 +56,10 @@ let AeropuertoService = class AeropuertoService {
         return await this.aeropuertoRepository.save(existingAeropuerto);
     }
     async delete(id) {
+        const aeropuerto = await this.aeropuertoRepository.findOne({ where: { id } });
+        if (!aeropuerto) {
+            throw new common_1.NotFoundException(`Aeropuerto con ID ${id} no encontrado.`);
+        }
         await this.aeropuertoRepository.delete(id);
     }
     async findAirportFromAirline(aerolineaId, aeropuertoId) {
