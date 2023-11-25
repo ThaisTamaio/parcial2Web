@@ -32,6 +32,24 @@ let AlbumController = class AlbumController {
     async delete(id) {
         return this.albumService.delete(id);
     }
+    async findAlbumPerformers(id) {
+        const album = await this.albumService.findOne(id);
+        if (!album) {
+            throw new common_1.NotFoundException(`Album con ID ${id} no encontrada.`);
+        }
+        return album.performers;
+    }
+    async findSpecificPerformerInAlbum(albumId, performerId) {
+        const album = await this.albumService.findOne(albumId);
+        if (!album) {
+            throw new common_1.NotFoundException(`Album con ID ${albumId} no encontrado.`);
+        }
+        const performer = album.performers.find(p => p.id === performerId);
+        if (!performer) {
+            throw new common_1.NotFoundException(`Performer con ID ${performerId} no encontrado en el álbum con ID ${albumId}.`);
+        }
+        return performer;
+    }
 };
 exports.AlbumController = AlbumController;
 __decorate([
@@ -61,6 +79,21 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AlbumController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Get)(':id/performers'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AlbumController.prototype, "findAlbumPerformers", null);
+__decorate([
+    (0, common_1.Get)(':albumId/performers/:performerId'),
+    __param(0, (0, common_1.Param)('albumId')),
+    __param(1, (0, common_1.Param)('performerId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AlbumController.prototype, "findSpecificPerformerInAlbum", null);
 exports.AlbumController = AlbumController = __decorate([
     (0, common_1.Controller)('albumes'),
     __metadata("design:paramtypes", [album_service_1.AlbumService])

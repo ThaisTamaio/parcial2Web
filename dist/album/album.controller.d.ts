@@ -7,4 +7,6 @@ export declare class AlbumController {
     findOne(id: string): Promise<import("./album.entity").AlbumEntity>;
     create(albumDto: AlbumDto): Promise<import("./album.entity").AlbumEntity>;
     delete(id: string): Promise<void>;
+    findAlbumPerformers(id: string): Promise<import("../performer/performer.entity").PerformerEntity[]>;
+    findSpecificPerformerInAlbum(albumId: string, performerId: string): Promise<import("../performer/performer.entity").PerformerEntity>;
 }
