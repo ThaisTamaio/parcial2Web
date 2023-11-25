@@ -90,6 +90,12 @@ describe('AlbumService', () => {
     expect(result).toEqual(album);
   });
 
+  it('findOne should throw a NotFoundException if the album is not found', async () => {
+    repository.findOne = jest.fn().mockResolvedValue(null);
+    const fakeAlbumId = faker.datatype.uuid();
+    await expect(service.findOne(fakeAlbumId)).rejects.toThrow(NotFoundException);
+  });
+
   it('should create an album successfully', async () => {
     const newAlbum = {
       nombre: faker.name.findName(),
@@ -175,5 +181,4 @@ describe('AlbumService', () => {
   
     await expect(service.addPerformerToAlbum(album.id, faker.datatype.uuid())).rejects.toThrow(NotFoundException);
   });
-
 });

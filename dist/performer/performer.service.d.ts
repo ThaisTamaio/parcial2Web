@@ -9,5 +9,4 @@ export declare class PerformerService {
     findAll(): Promise<PerformerEntity[]>;
     findOne(id: string): Promise<PerformerEntity>;
     create(performerDto: PerformerDto): Promise<PerformerEntity>;
-    findPerformerFromAlbum(albumId: string, performerId: string): Promise<PerformerEntity>;
 }

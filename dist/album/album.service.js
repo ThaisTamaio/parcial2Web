@@ -33,7 +33,7 @@ let AlbumService = class AlbumService {
     async findOne(id) {
         const album = await this.albumRepository.findOne({
             where: { id },
-            relations: ['performers, tracks']
+            relations: ['performers', 'tracks']
         });
         if (!album) {
             throw new common_1.NotFoundException(`Album con ID ${id} no encontrada.`);
@@ -63,6 +63,17 @@ let AlbumService = class AlbumService {
             throw new common_1.BadRequestException('No se puede eliminar un álbum con tracks asociados.');
         }
         await this.albumRepository.delete(id);
+    }
+    async updateAlbumTracks(albumId, newTracks) {
+        const album = await this.albumRepository.findOne({
+            where: { id: albumId },
+            relations: ['tracks']
+        });
+        if (!album) {
+            throw new common_1.NotFoundException(`Album con ID ${albumId} no encontrado.`);
+        }
+        album.tracks = newTracks;
+        return await this.albumRepository.save(album);
     }
     async addPerformerToAlbum(albumId, performerId) {
         const album = await this.albumRepository.findOne({

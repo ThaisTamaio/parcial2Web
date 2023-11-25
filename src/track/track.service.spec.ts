@@ -5,7 +5,7 @@ import { TrackEntity } from './track.entity';
 import { TrackService } from './track.service';
 import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
 import { faker } from '@faker-js/faker';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AlbumEntity } from '../album/album.entity';
 
 describe('TrackService', () => {
@@ -73,5 +73,88 @@ describe('TrackService', () => {
     const result = await service.findOne(track.id);
     expect(result).toEqual(track);
   });
+
+  it('findOne should throw a NotFoundException if the track is not found', async () => {
+    trackRepository.findOne = jest.fn().mockResolvedValue(null);
   
+    const fakeTrackId = faker.datatype.uuid();
+  
+    await expect(service.findOne(fakeTrackId)).rejects.toThrow(NotFoundException);
+  });  
+
+  it('create should successfully create a track', async () => {
+    // Crear un nuevo álbum para este test
+    const album = new AlbumEntity();
+    album.id = faker.datatype.uuid();
+    album.nombre = faker.name.findName();
+    album.caratula = faker.image.imageUrl();
+    album.fechaLanzamiento = faker.date.past();
+    album.descripcion = faker.lorem.sentence();
+  
+    // Configurar el mock de albumRepository.findOne para devolver el álbum creado
+    albumRepository.findOne = jest.fn().mockResolvedValue(album);
+  
+    const trackDto = {
+      nombre: faker.name.findName(),
+      duracion: faker.datatype.number({ min: 1 }), // Duración positiva
+      albumId: album.id, // ID del álbum creado
+    };
+  
+    const result = await service.create(trackDto);
+    expect(result).toBeDefined();
+    expect(result.nombre).toEqual(trackDto.nombre);
+    expect(result.duracion).toEqual(trackDto.duracion);
+  });  
+
+  it('create should throw a BadRequestException if the track duration is zero or negative', async () => {
+    // Crear un nuevo álbum para este test
+    const album = new AlbumEntity();
+    album.id = faker.datatype.uuid();
+    album.nombre = faker.name.findName();
+    album.caratula = faker.image.imageUrl();
+    album.fechaLanzamiento = faker.date.past();
+    album.descripcion = faker.lorem.sentence();
+  
+    const trackDto = {
+      nombre: faker.name.findName(),
+      duracion: 0, // Duración no positiva
+      albumId: album.id, // ID del álbum creado
+    };
+  
+    await expect(service.create(trackDto)).rejects.toThrow(BadRequestException);
+  });
+
+  it('create should throw a NotFoundException if the album does not exist', async () => {
+    const trackDto = {
+      nombre: faker.name.findName(),
+      duracion: faker.datatype.number({ min: 1 }),
+      albumId: 'id-de-album-inexistente', // ID de un álbum inexistente
+    };
+  
+    await expect(service.create(trackDto)).rejects.toThrow(NotFoundException);
+  });
+
+  it('create should throw a NotFoundException if the album does not exist', async () => {
+    const trackDto = {
+      nombre: faker.name.findName(),
+      duracion: faker.datatype.number({ min: 1 }),
+      albumId: 'id-de-album-inexistente', // ID de un álbum inexistente
+    };
+  
+    // Configurar el mock de albumRepository.findOne para simular que el álbum no existe
+    albumRepository.findOne = jest.fn().mockResolvedValue(null);
+  
+    await expect(service.create(trackDto)).rejects.toThrow(NotFoundException);
+  });
+  
+  it('create should throw a NotFoundException if the album does not exist', async () => {
+    const trackDto = {
+      nombre: faker.name.findName(),
+      duracion: faker.datatype.number({ min: 1 }),
+      albumId: 'id-de-album-inexistente', // ID de un álbum inexistente
+    };
+  
+    await expect(service.create(trackDto)).rejects.toThrow(NotFoundException);
+  });
+
 });

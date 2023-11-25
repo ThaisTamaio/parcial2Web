@@ -41,5 +41,4 @@ export class PerformerService {
         Object.assign(performer, performerDto);
         return await this.performerRepository.save(performer);
     }
-
 }

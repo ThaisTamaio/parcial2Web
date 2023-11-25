@@ -5,7 +5,7 @@ import { PerformerEntity } from './performer.entity';
 import { PerformerService } from './performer.service';
 import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
 import { faker } from '@faker-js/faker';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AlbumEntity } from '../album/album.entity';
 
 describe('PerformerService', () => {
@@ -67,5 +67,39 @@ describe('PerformerService', () => {
     const result = await service.findOne(performer.id);
     expect(result).toEqual(performer);
   });
+
+  it('findOne should throw a NotFoundException if the performer is not found', async () => {
+    performerRepository.findOne = jest.fn().mockResolvedValue(null);
+    const fakePerformerId = faker.datatype.uuid();
+    await expect(service.findOne(fakePerformerId)).rejects.toThrow(NotFoundException);
+  });
+  
+
+  it('create should successfully create a performer', async () => {
+    const performerDto = {
+      nombre: faker.name.findName(),
+      imagen: faker.image.imageUrl(),
+      descripcion: 'Descripción corta', // Descripción de menos de 100 caracteres
+    };
+  
+    const result = await service.create(performerDto);
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.nombre).toEqual(performerDto.nombre);
+    expect(result.descripcion).toEqual(performerDto.descripcion);
+  });
+
+  it('create should throw a BadRequestException if the description exceeds 100 characters', async () => {
+    const performerDto = {
+      nombre: faker.name.findName(),
+      imagen: faker.image.imageUrl(),
+      descripcion: 'a'.repeat(101), // Una descripción de 101 caracteres
+      albumes: [],
+    };
+
+    await expect(service.create(performerDto)).rejects.toThrow(BadRequestException);
+  });
+  
+  
   
 });

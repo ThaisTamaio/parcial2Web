@@ -44,15 +44,6 @@ let PerformerService = class PerformerService {
         Object.assign(performer, performerDto);
         return await this.performerRepository.save(performer);
     }
-    async findPerformerFromAlbum(albumId, performerId) {
-        const album = await this.albumRepository.findOne({ where: { id: albumId }, relations: ['performers'] });
-        if (!album)
-            throw new common_1.NotFoundException('Album no encontrada.');
-        const performer = album.performers.find(aero => aero.id === performerId);
-        if (!performer)
-            throw new common_1.NotFoundException('Performer no encontrado en la aerolínea.');
-        return performer;
-    }
 };
 exports.PerformerService = PerformerService;
 exports.PerformerService = PerformerService = __decorate([
