@@ -13,5 +13,6 @@ export declare class AlbumService {
     create(albumDto: AlbumDto): Promise<AlbumEntity>;
     delete(id: string): Promise<void>;
     updateAlbumTracks(albumId: string, newTracks: TrackEntity[]): Promise<AlbumEntity>;
+    updateAlbumPerformers(albumId: string, newPerformers: PerformerEntity[]): Promise<AlbumEntity>;
     addPerformerToAlbum(albumId: string, performerId: string): Promise<AlbumEntity>;
 }

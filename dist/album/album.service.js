@@ -75,6 +75,17 @@ let AlbumService = class AlbumService {
         album.tracks = newTracks;
         return await this.albumRepository.save(album);
     }
+    async updateAlbumPerformers(albumId, newPerformers) {
+        const album = await this.albumRepository.findOne({
+            where: { id: albumId },
+            relations: ['performers']
+        });
+        if (!album) {
+            throw new common_1.NotFoundException(`Album con ID ${albumId} no encontrado.`);
+        }
+        album.performers = newPerformers;
+        return await this.albumRepository.save(album);
+    }
     async addPerformerToAlbum(albumId, performerId) {
         const album = await this.albumRepository.findOne({
             where: { id: albumId },
