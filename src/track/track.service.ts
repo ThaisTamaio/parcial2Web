@@ -15,13 +15,13 @@ export class TrackService {
     ) {}
 
     async findAll(): Promise<TrackEntity[]> {
-        return await this.trackRepository.find({ relations: ['albumes'] });
-    }
+        return await this.trackRepository.find({ relations: ['album'] });
+    }    
 
     async findOne(id: string): Promise<TrackEntity> {
         const track = await this.trackRepository.findOne({ 
             where: { id }, 
-            relations: ['albumes'] 
+            relations: ['album'] 
         });
     
         if (!track) {
@@ -29,7 +29,7 @@ export class TrackService {
         }
     
         return track;
-    }    
+    }     
 
     async create(trackDto: TrackDto): Promise<TrackEntity> {   
         // Validar que la duración sea un número positivo

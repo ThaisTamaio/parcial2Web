@@ -24,12 +24,12 @@ let TrackService = class TrackService {
         this.albumRepository = albumRepository;
     }
     async findAll() {
-        return await this.trackRepository.find({ relations: ['albumes'] });
+        return await this.trackRepository.find({ relations: ['album'] });
     }
     async findOne(id) {
         const track = await this.trackRepository.findOne({
             where: { id },
-            relations: ['albumes']
+            relations: ['album']
         });
         if (!track) {
             throw new common_1.NotFoundException(`Track con ID ${id} no encontrado.`);
