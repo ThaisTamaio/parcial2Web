@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "7f21cc19-4e80-451c-bcca-94e7a520920b",
+		"_postman_id": "626361f6-93f0-45c4-ad4c-821b1f0f9109",
 		"name": "Album-Performer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "19767625"
+		"_exporter_id": "19767625",
+		"_collection_link": "https://solar-spaceship-244943.postman.co/workspace/aaa~ed20b85b-f663-45c4-851e-143e241a0f31/collection/19767625-626361f6-93f0-45c4-ad4c-821b1f0f9109?action=share&source=collection_link&creator=19767625"
 	},
 	"item": [
 		{
@@ -162,6 +163,53 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('id');",
 							"    pm.globals.set(\"cuartoPerformerId\", jsonData.id); // Guarda el ID en una variable global",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\": \"Otro nombre del Performer\",\n    \"descripcion\": \"Otra breve descripción del performer\",\n    \"imagen\": \"Otra URL de la imagen del performer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/performers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"performers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear otro performer valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response must have an ID\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.globals.set(\"otroPerformerId\", jsonData.id); // Guarda el ID en una variable global",
 							"});"
 						],
 						"type": "text/javascript"
