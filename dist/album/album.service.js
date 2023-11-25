@@ -87,6 +87,9 @@ let AlbumService = class AlbumService {
         });
         if (!performer)
             throw new common_1.NotFoundException('Performer no encontrado.');
+        if (album.performers.length >= 3) {
+            throw new common_1.BadRequestException('Un álbum no puede tener más de tres performers asociados.');
+        }
         album.performers.push(performer);
         return this.albumRepository.save(album);
     }

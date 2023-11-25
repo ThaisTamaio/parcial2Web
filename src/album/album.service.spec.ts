@@ -146,7 +146,6 @@ describe('AlbumService', () => {
   it('delete should throw an exception if album has tracks', async () => {
     const albumWithTracks = { ...albumList[0], tracks: [new TrackEntity()] };
     repository.findOne = jest.fn().mockResolvedValue(albumWithTracks);
-  
     await expect(service.delete(albumWithTracks.id)).rejects.toThrow(BadRequestException);
   });
   
@@ -181,4 +180,45 @@ describe('AlbumService', () => {
   
     await expect(service.addPerformerToAlbum(album.id, faker.datatype.uuid())).rejects.toThrow(NotFoundException);
   });
+
+  it('addPerformerToAlbum should not allow more than three performers in an album', async () => {
+    // Seleccionar un álbum de albumList
+    const album = { ...albumList[0] };
+
+    // Configurar el álbum para tener tres performers
+    const updatedPerformers = Array.from({ length: 3 }, () => {
+      const performer = new PerformerEntity();
+      performer.id = faker.datatype.uuid();
+      return performer;
+    });
+    await service.updateAlbumPerformers(album.id, updatedPerformers);
+
+    const newPerformer = new PerformerEntity();
+    newPerformer.id = faker.datatype.uuid();
+
+    repository.findOne = jest.fn().mockResolvedValue(album);
+    performerRepository.findOne = jest.fn().mockResolvedValue(newPerformer);
+
+    await expect(service.addPerformerToAlbum(album.id, newPerformer.id)).rejects.toThrow(BadRequestException);
+});
+
+  it('addPerformerToAlbum should allow adding a performer if there are less than three', async () => {
+    // Obtener un álbum que tiene menos de tres performers
+    const albumWithLessThanThreePerformers = albumList.find(album => album.performers.length < 3);
+    if (!albumWithLessThanThreePerformers) {
+      throw new Error('No se encontró un álbum con menos de tres performers para la prueba');
+    }
+
+    const newPerformer = new PerformerEntity();
+    newPerformer.id = faker.datatype.uuid();
+
+    repository.findOne = jest.fn().mockResolvedValue(albumWithLessThanThreePerformers);
+    performerRepository.findOne = jest.fn().mockResolvedValue(newPerformer);
+
+    const result = await service.addPerformerToAlbum(albumWithLessThanThreePerformers.id, newPerformer.id);
+
+    expect(result.performers.length).toBeLessThanOrEqual(3);
+    expect(result.performers).toContainEqual(newPerformer);
+  });
+
 });

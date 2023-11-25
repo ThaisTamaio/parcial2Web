@@ -22,4 +22,8 @@ export class AlbumController {
         return this.albumService.create(albumDto);
     }
 
+    @Delete(':id')
+    async delete(@Param('id') id: string) {
+        return this.albumService.delete(id);
+    }
 }

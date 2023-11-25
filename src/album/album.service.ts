@@ -83,10 +83,27 @@ export class AlbumService {
         
         // Guardar los cambios en el álbum
         return await this.albumRepository.save(album);
+    }
+
+    async updateAlbumPerformers(albumId: string, newPerformers: PerformerEntity[]): Promise<AlbumEntity> {
+        // Encontrar el álbum por ID
+        const album = await this.albumRepository.findOne({
+            where: { id: albumId },
+            relations: ['performers']
+        });
+    
+        if (!album) {
+            throw new NotFoundException(`Album con ID ${albumId} no encontrado.`);
+        }
+    
+        // Actualizar los performers del álbum
+        album.performers = newPerformers;
+        
+        // Guardar los cambios en el álbum
+        return await this.albumRepository.save(album);
     }    
 
     //Asociacion
-
     async addPerformerToAlbum(albumId: string, performerId: string): Promise<AlbumEntity> {
         const album = await this.albumRepository.findOne({
             where: { id: albumId },
@@ -99,8 +116,12 @@ export class AlbumService {
         });
         if (!performer) throw new NotFoundException('Performer no encontrado.');
     
+        // Verificar si el álbum ya tiene tres performers asociados
+        if (album.performers.length >= 3) {
+            throw new BadRequestException('Un álbum no puede tener más de tres performers asociados.');
+        }
+    
         album.performers.push(performer);
         return this.albumRepository.save(album);
-    }    
-
+    }
 }

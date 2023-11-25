@@ -29,6 +29,9 @@ let AlbumController = class AlbumController {
     async create(albumDto) {
         return this.albumService.create(albumDto);
     }
+    async delete(id) {
+        return this.albumService.delete(id);
+    }
 };
 exports.AlbumController = AlbumController;
 __decorate([
@@ -51,6 +54,13 @@ __decorate([
     __metadata("design:paramtypes", [album_dto_1.AlbumDto]),
     __metadata("design:returntype", Promise)
 ], AlbumController.prototype, "create", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AlbumController.prototype, "delete", null);
 exports.AlbumController = AlbumController = __decorate([
     (0, common_1.Controller)('albumes'),
     __metadata("design:paramtypes", [album_service_1.AlbumService])
